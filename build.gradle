@@ -15,16 +15,18 @@
  ******************************************************************************/
 plugins {
     id 'application'
-    id 'com.jfrog.bintray' version '1.7.3'
+    // id 'com.jfrog.bintray' version '1.7.3'
     id 'java'
     id 'maven'
     id 'maven-publish'
     id 'signing'
-    id 'com.github.johnrengelman.shadow' version '2.0.0'
+    id 'com.github.johnrengelman.shadow' version '4.0.2'
 }
 
-version = '1.2.0'
-project.ext.NIFI_VERSION='1.4.0'
+// version = '1.8.0'
+version = '1.19.1'
+// project.ext.NIFI_VERSION='1.8.0'
+project.ext.NIFI_VERSION='1.19.1'
 description = "A project to create a stub/mock environment for testing ExecuteScript processors"
 group = 'mattyb149'
 status = 'RELEASE'
@@ -35,6 +37,9 @@ repositories {
     jcenter()
 }
 
+configurations {
+  ivy
+}
 
 dependencies {
     compile "org.apache.nifi:nifi-api:${project.ext.NIFI_VERSION}"
@@ -45,8 +50,11 @@ dependencies {
     runtime 'org.slf4j:slf4j-log4j12:1.7.14'
 
     // script engine(s)
-    runtime 'org.codehaus.groovy:groovy-all:2.4.6'
-    runtime 'org.python:jython-standalone:2.7.0'
+    runtime 'org.codehaus.groovy:groovy-all:2.4.15'
+    runtime 'org.python:jython-standalone:2.7.1'
+    runtime 'org.jruby:jruby-complete:9.1.17.0'
+
+    runtime "org.apache.ivy:ivy:2.4.0"
 }
 
 mainClassName = 'nifi.ScriptRunner'
@@ -67,6 +75,9 @@ artifacts {
     archives sourcesJar, javadocJar
 }
 
+tasks.withType(GroovyCompile) {
+  groovyClasspath += configurations.ivy
+}
 
 publishing {
     publications {
@@ -85,36 +96,36 @@ publishing {
 }
 
 
-bintray {
-    user = System.getProperty('BINTRAY_USER') ?: 'mattyb149'
-    key = project.ext.apiKey
-    //configurations = ['default']
-    publications = ['mavenJava']
-    filesSpec {
-        from 'files'
-        into 'standalone_files/level1'
-        rename '(.+)\\.(.+)', '$1-suffix.$2'
-    }
+// bintray {
+//     user = System.getProperty('BINTRAY_USER') ?: 'mattyb149'
+//     key = project.ext.apiKey
+//     //configurations = ['default']
+//     publications = ['mavenJava']
+//     filesSpec {
+//         from 'files'
+//         into 'standalone_files/level1'
+//         rename '(.+)\\.(.+)', '$1-suffix.$2'
+//     }
+//
+//     dryRun = false
+//     pkg {
+//         repo = 'maven'
+//         userOrg = group
+//         name = project.name
+//         desc = project.description
+//         websiteUrl = 'https://github.com/mattyb149/nifi-script-tester'
+//         issueTrackerUrl = 'https://github.com/mattyb149/nifi-script-tester/issues'
+//         vcsUrl = 'https://github.com/mattyb149/nifi-script-tester.git'
+//         licenses = ['Apache-2.0']
+//         labels = ['apache', 'nifi', 'groovy']
+//         attributes = ['plat': ['linux', 'osx']]
+//         publicDownloadNumbers = true
+//         version {
+//             vcsTag = project.version
+//         }
+//     }
+// }
 
-    dryRun = false
-    pkg {
-        repo = 'maven'
-        userOrg = group
-        name = project.name
-        desc = project.description
-        websiteUrl = 'https://github.com/mattyb149/nifi-script-tester'
-        issueTrackerUrl = 'https://github.com/mattyb149/nifi-script-tester/issues'
-        vcsUrl = 'https://github.com/mattyb149/nifi-script-tester.git'
-        licenses = ['Apache-2.0']
-        labels = ['apache', 'nifi', 'groovy']
-        attributes = ['plat': ['linux', 'osx']]
-        publicDownloadNumbers = true
-        version {
-            vcsTag = project.version
-        }
-    }
-}
-
-task wrapper(type: Wrapper) {
+/*task wrapper(type: Wrapper) {
     gradleVersion = "4.2.1"
-}
+}*/

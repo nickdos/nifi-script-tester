@@ -221,7 +221,8 @@ public class ExecuteScript extends AbstractSessionFactoryProcessor {
                 // Commit this session for the user. This plus the outermost catch statement mimics the behavior
                 // of AbstractProcessor. This class doesn't extend AbstractProcessor in order to share a base
                 // class with InvokeScriptedProcessor
-                session.commit();
+                // session.commit(); // NdR for Nifi 1.19.1
+                session.commitAsync();
             } catch (ScriptException e) {
                 throw new ProcessException(e);
             }
